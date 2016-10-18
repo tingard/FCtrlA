@@ -1,0 +1,8 @@
+#$ -S /bin/bash
+#$ -cwd
+#$ -j y
+#$ -o jobLog.log
+
+python FatController.py -o 0201903501 -r 149.5916 --deg -11.0642 -z 0.1605 -R 1095
+
+

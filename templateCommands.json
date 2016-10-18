@@ -1,0 +1,18 @@
+{
+  "sas_backscale": "backscale spectrumset={input_spectrum} badpixlocation={pn_table}", 
+  "job_maker": "#$ -S /bin/bash\n#$ -cwd\n#$ -j y\n#$ -o {output}\necho {phase} >> {wd}/running_jobs.lock\n{command}\nsed -i '/{phase}/d' {wd}/running_jobs.lock", 
+  "sas_arfgen": "arfgen spectrumset={input_spectra} arfset={output_arf} withrmfset=yes rmfset={input_rmf} badpixlocation={pn_table} extendedsource=yes detmaptype=flat", 
+  "sas_group_spectra": "specgroup spectrumset={input_spectrum} mincounts=25 oversample=3 rmfset={rmf} arfset={arf} backgndset={background_spectrum} groupedset={output_spectrum}", 
+  "clmass_script": "{data_groups}\n\nset clmroot {model_path}\nlmod clmass ${{clmroot}}/model\nignore bad\nignore **-0.3\nignore 7.9-**\nmodel {model} ( wabs * mekal )\n/*\nnewpar 37 {nH}\nfreeze 37\n#newpar 38 {kT}\nnewpar 40 0.3\nnewpar 41 {z}\nfreeze 41\nnewpar 43 1e-3 1e-5\nxset delta 0.01\nsource ${{clmroot}}/tcl/mixcommon.tcl\nsource ${{clmroot}}/tcl/phyconst.tcl\nsource ${{clmroot}}/tcl/{model}.tcl\nmassmod_start 0 0 1.1 0\nsetscales 1.0 rbounds runit Munit rhocritmodel\nmixNFWstartPars rbounds {kT} 6 $runit $rhocritmodel\nquery yes\nfit 100\nbreakLinks {{{{Abundanc \"\"}}}}\nfit\nputs $runit\nputs [massOfR {r500} rbounds]\nexit\n", 
+  "xwindow_start": "Xvfb :1 &\nexport DISPLAY=:1;\nsleep 2", 
+  "sas_rmfgen": "rmfgen spectrumset={input_spectra} rmfset={output_rmf}", 
+  "pn_file": "/lustre/scratch/astro/pr83/{obsID}/eclean/{pn_table}", 
+  "sas_circle_gen": "evselect table={pn_table} withspectrumset=yes spectrumset={outfile} energycolumn=PI spectralbinsize=5 withspecranges=yes specchannelmin=0 specchannelmax=20479 expression='(FLAG==0) && (PATTERN<=4) && ((X,Y) IN circle({x_pos},{y_pos},{radius})) &&! {masking_string}'", 
+  "regions_file": "/lustre/scratch/astro/pr83/code/xapa/1412/{obsID}/{file}", 
+  "ds9_to_fk5": "ds9 -fits {pn_image}  -regions {input_regions} -regions system wcs -regions sky fk5 -regions save {output_regions} -quit", 
+  "reg_string": "# Region file format: DS9 version 4.1\nglobal color=green dashlist=8 3 width=1 font=\"helvetica 10 normal roman\" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1\nfk5\ncircle({x},{y},{r500_as}\")\n", 
+  "sas_image_extract": "evselect table={pn_table} imagebinning=binSize imageset={pn_image} withimageset=yes xcolumn=X ycolumn=Y ximagebinsize=80 yimagebinsize=80", 
+  "sas_setup_string": "export SAS_DIR=/lustre/scratch/astro/pr83/code/sas_dir/xmmsas_20141104_1833\n. $SAS_DIR/setsas.sh\nexport SAS_CCFPATH=/lustre/scratch/astro/pr83/code/ccf\nexport SAS_ODF=/lustre/scratch/astro/pr83/{obsID}/odf/*SUM.SAS\nexport SAS_CCF=/lustre/scratch/astro/pr83/{obsID}/odf/ccf.cif", 
+  "sas_annulus_gen": "evselect table={pn_table} withspectrumset=yes spectrumset={outfile} energycolumn=PI spectralbinsize=5 withspecranges=yes specchannelmin=0 specchannelmax=20479 expression='(FLAG==0) && (PATTERN<=4) && ((X,Y) IN annulus({x_pos},{y_pos},{inner_radius},{outer_radius})) &&! {masking_string}'", 
+  "ds9_to_physical": "ds9 -fits {pn_image} -regions {input_regions} -regions system physical -regions save {output_regions} -quit"
+}
