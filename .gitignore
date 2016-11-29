@@ -1,0 +1,5 @@
+# gitignore file for FCtrlA
+FCtrlA_**
+HaroldHelperLogs**
+t.sh
+test**
