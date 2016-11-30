@@ -1,0 +1,6 @@
+ObsID,ra,dec,z,r500,enable jobs,monotonic
+1,1,1,1,1,
+2,2,2,2,2,True,False
+3,3,3,3,3,,True
+4,4,4,4,4,True,True
+5,5,5,5,5,False,False
