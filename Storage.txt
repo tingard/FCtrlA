@@ -1,0 +1,11 @@
+python FatController.py -o 0201903501 -r 149.5916 --deg -11.0642 -z 0.1605 -R 1095 -j
+
+python FatController.py -o 0112230501 -r 178.8291 -d 23.41 -z 0.1429 -R 1300 -j
+
+python FatController.py -o 0111270101 -r 328.4041 -d 17.70 -z 0.2302 -R 1414 -j  Nope
+
+python FatController.py -o 0551830101 -r 210.2580 -d 2.88 -z 0.2520 -R 1475 -j
+
+A1650 python FatController.py -o 0093200101 -r 194.7000 --deg -1.75 -z 0.0845 -R 1128 -j
+
+A3112 python FatController.py -o 0105660101 -r 49.4833 --deg -3.30 -z 0.0761 -R 1025 -j

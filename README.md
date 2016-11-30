@@ -71,7 +71,7 @@ The process is as follows:
   * <code>-m</code>:  Constrain density function to be monotonic
 * Optional additional arguments:
   * <code>-N < ></code>: Number of annuli to use
-  * <code>-F < ></code>: Shell radius factor (r<sub>i</sub> = R<sub>500</sub>/F<sup>N-i-1</sup>, i in [0,N))
+  * <code>-F < ></code>: Shell radius factor (r<sub>i</sub> = R<sub>500</sub>/F<sup>N-i-2</sup>, i in [0,N))
 
 Note that shells go out beyond R<sub>500</sub>
 A907 cluster example:
@@ -90,6 +90,11 @@ HaroldHelper contains a series of functions designed to assist in the generation
 
 ## PercyPlotter
 
-This file aids the generation of cluster mass profiles. A lot of work needs to be done on it.
+PercyPlotter takes two arguments and creates a cluster mass profile.
+1) The R500 radius of the cluster. 
+2) The path to the clmass_script.xcm file. This file is located in the /code directory of the spec_... directory created by FatController.py
 
-------
+This program should be run from the directory above the spec_... folder of the cluster in question. 
+<b> NB: It is likely that three errors pertaining to clmass files will be displayed when running PercyPlotter, this is not an issue! <b>ß
+
+---

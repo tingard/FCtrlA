@@ -5,7 +5,6 @@ running them to produce a mass. See README.md for program flow and examples.
 For usage run:
 python FatController.py --help
 """
-# TODO: add checking of presence of files required for each step
 
 import os
 import sys
@@ -51,7 +50,7 @@ def usage(v=False):  # print usage and quit
         print '\t"-o": XMM Observation ID of target cluster'
         print '\t"-r": Right Ascension of target cluster in degrees (fk5 system)'
         print '\t"-d": Declination of target cluster in degrees (fk5 system) (cannot be negative)'
-        print '\t\tOR "--dec": Declination of target (can be negative)'
+        print '\t\tOR "--deg": Declination of target (can be negative)'
         print '\t"-z": Redshift of target cluster in degrees (fk5 system)'
         print '\t"-R": R500 of cluster in kiloparsecs'
         print
@@ -62,11 +61,11 @@ def usage(v=False):  # print usage and quit
         print '\t\tThis corresponds to a JSON flag of "monotonic" being True'
         print '\t"-N <number of shells>": Number of shells to use (default is 8)'
         print '\t\tThis corresponds to a JSON keyword of N'
-        print '\t"-F <shell factor>": Rate of increase of shell boundaries (default 1.5)'
+        print '\t"-F <shell factor>": Rate of increase of shell boundaries (default 1.3)'
         print '\t\tThis corresponds to a JSON keyword of F'
         print
         print '\nExamples:'
-        print '  python FatController.py -o 0201903501 -r 149.5916 --dec -11.0642 -z 0.1605 -R 1095'
+        print '  python FatController.py -o 0201903501 -r 149.5916 --deg -11.0642 -z 0.1605 -R 1095'
         print '    ^^ Abell 907 cluster ^^'
         print '  python FatController.py -j session_log1463267285.96.log'
         print
@@ -88,7 +87,7 @@ except IOError:
 def check_arguments():
     if len(sys.argv[1:]):
         try:
-            opts, args = getopt.getopt(sys.argv[1:], 'f:o:r:d:z:R:jmN:F:', ['help', 'dec='])
+            opts, args = getopt.getopt(sys.argv[1:], 'f:o:r:d:z:R:jmN:F:', ['help', 'deg='])
         except getopt.GetoptError:
             # unrecognized argument passed
             print 'getopt error'
@@ -99,7 +98,7 @@ def check_arguments():
             usage(v=True)
         if '-f' not in provided_args:  # user has not provided an input json file (batch running for instance)
             if not all(a in provided_args for a in ['-o', '-r', '-z', '-R']) and not \
-                    (('-d' in provided_args) or ('--dec' in provided_args)):  # check correct provided arguments
+                    (('-d' in provided_args) or ('--deg' in provided_args)):  # check correct provided arguments
                 print 'Missing argument, require -o -r -d -z -R all with values in this mode.'
                 usage()
             else:
@@ -108,8 +107,8 @@ def check_arguments():
                     args_ra = float(opts[provided_args.index('-r')][1])
                     if '-d' in provided_args:
                         args_dec = float(opts[provided_args.index('-d')][1])
-                    elif '--dec' in provided_args:
-                        args_dec = float(opts[provided_args.index('--dec')][1])
+                    elif '--deg' in provided_args:
+                        args_dec = float(opts[provided_args.index('--deg')][1])
                     else:
                         args_dec = None
                         usage()  # this should never happen
@@ -162,8 +161,6 @@ def check_arguments():
                     float(json_args['dec'])
                     float(json_args['z'])
                     float(json_args['r500'])
-                    int(json_args.get('N', 1))
-                    float(json_args.get('F', 1.0))
                 except ValueError:
                     valid_file &= False
 
@@ -175,7 +172,6 @@ def check_arguments():
                     return_dict['enable jobs'] = True
                 else:
                     return_dict['enable jobs'] = return_dict.get('enable jobs', False)
-
                 return return_dict
 
             else:
@@ -186,10 +182,10 @@ def check_arguments():
 
 
 def make_working_directory(obs_id):
-    working_dir = loc + '/FCtrlA_{}'.format(obs_id)
+    working_dir = loc + '/spec_{}'.format(obs_id)
     i = 0
     while os.path.exists(working_dir):
-        working_dir = loc + '/FCtrlA_{}{}'.format(obs_id, ('_' + str(i) if i else ''))
+        working_dir = loc + '/spec_{}{}'.format(obs_id, ('_' + str(i) if i else ''))
         i += 1
     print 'Working in folder:', working_dir
 
@@ -223,7 +219,7 @@ def print_save_run(phase, code, session, blocking=True):
     # TODO: change this to an apollo job submission, which waits for the job to be complete
     # print a concatenated version of the code to the screen (full version still in output files)
     print "\n------ Phase {} Code: ------".format(phase)
-    print '\n'.join(map(lambda x: x[:min(len(x), 150)]+('...' if len(x) > 150 else ''), code)), '\n', '-'*28
+    print '\n'.join(map(lambda x: x[:min(len(x), 150)]+('...' if len(x)>150 else ''), code)), '\n', '-'*28
 
     # save the session code in a shell script
     with open(session['cwd'] + '/code/phase{}_code.sh'.format(phase), 'w') as f:
@@ -394,8 +390,8 @@ def phase1b(session):
         r500_physical = float(re.findall(r'-?[0-9]+\.[0-9]+', f_cont)[-1])
 
     # calculate shell boundaries in physical and arcsecond coordinates
-    shells = [float(r500_physical)/F**(N-i-1) for i in range(N)]
-    shells_asec = [float(session['r500 arcseconds'])/session['F']**(session['N']-i-1)
+    shells = [float(r500_physical)/F**(N-i-2) for i in range(N)]
+    shells_asec = [float(session['r500 arcseconds'])/session['F']**(session['N']-i-2)
                    for i in range(N)]
 
     # read in the converted XAPA regions in physical coordinates
@@ -450,11 +446,11 @@ def phase2a(session):
         r2=i
     ) for i in session['shells']])
 
-    reg_file += '\nellipse({x},{y},{r1},{r2},0) # color=red dash=1\n'.format(
+    reg_file += '\nellipse({x},{y},{r1},{r2},0) # dash = 1\n'.format(
         x=session['ra physical'],
         y=session['dec physical'],
-        r1=session['shells'][-1]*1.2,
-        r2=session['shells'][-1]*1.2
+        r1=session['shells'][-1]*1.3,
+        r2=session['shells'][-1]*1.3
     )
 
     with open(wd+'/output/annuli.reg', 'w') as f:
@@ -496,7 +492,7 @@ def phase2a(session):
             x_pos=session['ra physical'],
             y_pos=session['dec physical'],
             inner_radius=float(session['shells'][-1]),
-            outer_radius=float(session['shells'][-1])*1.2,
+            outer_radius=float(session['shells'][-1])*1.3,
             masking_string=session['masking string']
         )
     ]
@@ -522,7 +518,7 @@ def phase2a(session):
     ]
 
     # send the code off to run
-    print_save_run('2a', shell_code, session, blocking=(not session['enable jobs']))
+    print_save_run('2a', shell_code, session, blocking=False)
 
     # if the session is running on apollo, we need to wait for it to finish (might be worth adding some sort of ticker?)
     if session['enable jobs']:
@@ -555,6 +551,7 @@ def phase2b(session):
     :return: None
     """
     wd = session['cwd']
+
     # for each generated annulus, create an arf file
     for i in range(session['N']):
         # if jobs are enabled
@@ -571,10 +568,9 @@ def phase2b(session):
                     input_rmf=wd+'/rmf_annulus0.rmf',
                     pn_table=session['events list']
                 ),
-                'cd '+wd,
-                'rm -r {}/tmp_annulus{}'.format(wd, i)
+                'cd '+wd
             ]
-            print_save_run('2b.ARF{}'.format(i), shell_code, session, blocking=False)
+            print_save_run('arfgen{}'.format(i), shell_code, session, blocking=False)
         else:
             shell_code = [
                 templates['sas_setup_string'].format(
@@ -589,10 +585,10 @@ def phase2b(session):
                     pn_table=session['events list']
                 ),
                 'cd '+wd,
-                'rm -r {}/tmp_annulus{}'.format(wd, i)
+                'rm {}/tmp_annulus{}'.format(wd, i)
             ]
-            # attempting to run this
-            print_save_run('2b.ARF{}'.format(i), shell_code, session, blocking=True)
+            t = Thread(target=lambda: print_save_run('arfgen{}'.format(i), shell_code, session))
+            t.start()
 
     if session['enable jobs']:
         # we now wait for the arfgen jobs to be done
@@ -616,8 +612,8 @@ def phase2b(session):
             sleep(2)
     else:
         print 'Running arfgen jobs as background processes. Waiting on completion'
-        generated_arfs = {re.match(r'^arf_annulus([0-9]+).arf$', i).group(1) for i in os.listdir(wd) if 'arf_' in i}
-        while active_count() > 1 and not generated_arfs == set(map(str, range(session['N']))):
+        print active_count
+        while active_count() > 2:
             sys.stdout.write(
                 '\b'*30+'last checked {}'.format(
                     '{:%H:%M:%S}'.format(
@@ -627,30 +623,19 @@ def phase2b(session):
             )
             sys.stdout.flush()
             sleep(2)
-            generated_arfs = {re.match(r'^arf_annulus([0-9]+).arf$', i).group(1) for i in os.listdir(wd) if 'arf_' in i}
-        print 'Active thread count', active_count()
 
 
 def phase2c(session):
     """
     Group spectrum files and add XFLT keywords
-    :param session: dictionary, current session information (ra, dec, masking string, run options)
+    :param session:
     :return:
     """
     wd = session['cwd']
-
-    # check files have been generated
-    generated_spectra = {re.match(r'^annulus([0-9]+).fits$', i).group(1) for i in os.listdir(wd) if i[:7] == 'annulus'}
-    if not generated_spectra == set(map(str, range(session['N']))):
+    generated_spectra = [i for i in os.listdir(wd) if re.match(r'^annulus[0-9]+\.fits$', i)]
+    if not {re.search('[0-9]+', i).group() for i in generated_spectra} == set(map(str, range(session['N']))):
         print 'Could not find all expected spectra'
         print '\tFound:', {re.search('[0-9]+', i).group() for i in generated_spectra}
-        print '\tExpected:', set(range(session['N']))
-        sys.exit(0)
-
-    generated_arfs = {re.match(r'^arf_annulus([0-9]+).arf$', i).group(1) for i in os.listdir(wd) if 'arf_' in i}
-    if not generated_arfs == set(map(str, range(session['N']))):
-        print 'Could not find all generated ARF files'
-        print '\tFound:', generated_arfs
         print '\tExpected:', set(range(session['N']))
         sys.exit(0)
 
@@ -682,11 +667,10 @@ def phase2c(session):
             f.close()
 
 
-def phase3(session, path_to_model='/lustre/scratch/inf/tl229/new_massmod'):
+def phase3(session, path_to_model='/lustre/scratch/inf/dt237/new_massmod'):
     """
     Identify initial parameters. Create a template XSPEC script, run it and scrape the output
-    :param session: dictionary, current session information (ra, dec, masking string, run options)
-    :param path_to_model: path to Clmass root model package
+    :param session:
     :return: None
     """
     wd = session['cwd']
@@ -706,7 +690,7 @@ def phase3(session, path_to_model='/lustre/scratch/inf/tl229/new_massmod'):
                       "grep '{dec}' | grep Ext"
         search_str1 = search_str1.format(
             ra=round(session['ra'], 2),
-            dec=str(round(session['dec'], 2)).replace('-', '\\-')
+            dec=str(round(session['dec'], 2)).replace('-','\\-')
         )
         # print "First search string:\n\t", search_str1
         search_result1 = subprocess.Popen(search_str1, shell=True, stdout=subprocess.PIPE)
@@ -796,7 +780,7 @@ def main():
     if not cluster_info.get('N'):
         cluster_info['N'] = 8  # define number of annuli to use
     if not cluster_info.get('F'):
-        cluster_info['F'] = 1.4  # define shell growth parameter
+        cluster_info['F'] = 1.3  # define shell growth parameter
 
     cluster_info['events list'] = templates['pn_file'].format(
         obsID=cluster_info['ObsID'], pn_table="pn_exp1_clean_evts.fits"
@@ -813,6 +797,14 @@ def main():
     phase2c(cluster_info)  # conduct phase 2c
 
     phase3(cluster_info)   # conduct phase 3
+
+    cwd = (str(cluster_info['cwd']).split('/'))
+    cwd = cwd[len(cwd) - 1]
+    os.chdir('..')
+    print(os.getcwd())
+    cmd = 'python PercyPlotter.py ' + str(cluster_info['r500 kpc']) + ' ' + str(cwd) + '/code/clmass_script.xcm'
+    print(cmd) # Need to change this, put this series of commands in a seperate script
+    subprocess.call(cmd, shell=True)
 
     if cluster_info.get('m500'):
         print 'Identified Cluster mass of {} M_solar'.format(cluster_info['m500'])
