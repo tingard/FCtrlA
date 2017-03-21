@@ -87,8 +87,8 @@ except IOError:
 
 def check_arguments():
     if len(sys.argv[1:]):
-        try:
-            opts, args = getopt.getopt(sys.argv[1:], 'f:o:r:d:z:R:jmN:F:', ['help', 'dec='])
+        try::nH
+            opts, args = getopt.getopt(sys.argv[1:], 'f:o:r:d:z:R:T:n:jmN:F:', ['help', 'dec='])
         except getopt.GetoptError:
             # unrecognized argument passed
             print 'getopt error'
@@ -98,9 +98,9 @@ def check_arguments():
         if '--help' in provided_args:  # print verbose help
             usage(v=True)
         if '-f' not in provided_args:  # user has not provided an input json file (batch running for instance)
-            if not all(a in provided_args for a in ['-o', '-r', '-z', '-R']) and not \
+            if not all(a in provided_args for a in ['-o', '-r', '-z', '-R','-Tx','n']) and not \
                     (('-d' in provided_args) or ('--dec' in provided_args)):  # check correct provided arguments
-                print 'Missing argument, require -o -r -d -z -R all with values in this mode.'
+                print 'Missing argument, require -o -r -d -z -R -Tx -n all with values in this mode.'
                 usage()
             else:
                 try:
@@ -117,6 +117,8 @@ def check_arguments():
                     args_r500 = u.Quantity(float(opts[provided_args.index('-R')][1]), u.kpc)
                     d_a = Cosmo.angular_diameter_distance(args_z)
                     args_r500_arcseconds = (180.0/np.pi)*float(args_r500/d_a)*3600
+                    args_Tx = float(opts[provided_args.index('-Tx')][1])
+                    args_n = float(opts[provided_args.index('-n')][1])
                     return_dict = {
                         'ObsID': args_obsid,
                         'ra': args_ra,
@@ -124,6 +126,8 @@ def check_arguments():
                         'z': args_z,
                         'r500 kpc': float(args_r500/u.Quantity(1.0, u.kpc)),
                         'r500 arcseconds': args_r500_arcseconds
+                        'Tx': args_Tx,
+                        'n': args_n
                     }
                     if '-j' in provided_args:
                         return_dict['enable jobs'] = True
@@ -151,7 +155,7 @@ def check_arguments():
                 print err
                 usage()
             json_keys = json_args.keys()
-            if all(k in json_keys for k in ['ObsID', 'ra', 'dec', 'z', 'r500']):
+            if all(k in json_keys for k in ['ObsID', 'ra', 'dec', 'z', 'r500', 'Tx', 'n']):
                 return_dict = {k: v for k, v in json_args}
                 valid_file = True
                 valid_file &= re.match('^[0-9]+$', json_args['ObsID']).group()  # ensure a valid ObsID is provided
@@ -162,6 +166,8 @@ def check_arguments():
                     float(json_args['dec'])
                     float(json_args['z'])
                     float(json_args['r500'])
+                    float(json_args['Tx'])
+                    float(json_args['n'])
                     int(json_args.get('N', 1))
                     float(json_args.get('F', 1.0))
                 except ValueError:
