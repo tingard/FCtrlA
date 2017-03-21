@@ -707,30 +707,7 @@ def phase3(session, path_to_model='/lustre/scratch/inf/tl229/new_massmod'):
         nH = session['nH']
         kT = session['kT']
     else:
-        # if not, query XCS source list and temperature catalog
-        search_str1 = "grep {ra} /lustre/scratch/astro/pr83/code/tables/DR_01_02_16/Source.csv | " + \
-                      "grep '{dec}' | grep Ext"
-        search_str1 = search_str1.format(
-            ra=round(session['ra'], 2),
-            dec=str(round(session['dec'], 2)).replace('-', '\\-')
-        )
-        # print "First search string:\n\t", search_str1
-        search_result1 = subprocess.Popen(search_str1, shell=True, stdout=subprocess.PIPE)
-        output1 = search_result1.stdout.read().split(',')
-        # print 'Returned:\n\t', output1
-        name = output1[0].replace('+', '-').split('-')[0].replace(' ', '')
-        # print "Identified cluster name:", name
-        search_str2 = "cat /lustre/scratch/astro/pr83/code/temperatureFitting/temperature_dr2_plank/clusters/" + \
-                      "{name}*/spec/{name}*res*dat"
-        search_str2 = search_str2.format(
-            name=name
-        )
-        # print "Second search string:\n\t", search_str2
-        search_result2 = subprocess.Popen(search_str2, shell=True, stdout=subprocess.PIPE)
-        output2 = search_result2.stdout.read().split()
-        print 'Returned:\n\t', output2
-        kT = output2[0]
-        nH = output2[6]
+        exit()
 
     # save the values to our session
     session['kT'] = kT
