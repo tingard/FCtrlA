@@ -703,15 +703,15 @@ def phase3(session, path_to_model='/lustre/scratch/inf/tl229/new_massmod'):
     subprocess.call('ln -s {} {}'.format(path_to_model+'/support/cosinfo', wd+'/'), shell=True)
 
     # check if we have been provided with initial parameters
-    if ('nH' in session.keys()) and ('kT' in session.keys()):
-        nH = session['nH']
-        kT = session['kT']
+    if ('n' in session.keys()) and ('Tx' in session.keys()):
+        nH = session['n']
+        kT = session['Tx']
     else:
-        exit()
+        sys.exit()
 
     # save the values to our session
-    session['kT'] = kT
-    session['nH'] = nH
+    session['Tx'] = kT
+    session['n'] = nH
 
     # cd into the working directory
     os.chdir(wd)
