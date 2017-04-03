@@ -713,6 +713,11 @@ def phase3(session, path_to_model='/lustre/scratch/inf/tl229/new_massmod'):
         output1 = search_result1.stdout.read().split(',')
         # print 'Returned:\n\t', output1
         name = output1[0].replace('+', '-').split('-')[0].replace(' ', '')
+
+        if name == '':
+            print("To your eternal shame Tim, this doesn't work")
+            sys.exit()
+
         # print "Identified cluster name:", name
         search_str2 = "cat /lustre/scratch/astro/pr83/code/temperatureFitting/temperature_dr2_plank/clusters/" + \
                       "{name}*/spec/{name}*res*dat"

@@ -95,6 +95,31 @@ PercyPlotter takes two arguments and creates a cluster mass profile.
 2) The path to the clmass_script.xcm file. This file is located in the /code directory of the spec_... directory created by FatController.py
 
 This program should be run from the directory above the spec_... folder of the cluster in question. 
-<b> NB: It is likely that three errors pertaining to clmass files will be displayed when running PercyPlotter, this is not an issue! <b>ß
+<b> NB: It is likely that three errors pertaining to clmass files will be displayed when running PercyPlotter, this is not an issue! </b>
+
+
+## MavisMassTemp
+
+Currently, this code creates a plot of M<sub>500</sub> (cluster mass) vs kT (cluster temperature)
+
+It does not require arguments, it only needs to be executed in a directory of FatController.py output folders (of the form spec_xxxx.)
+
+It can identify clusters that failed to run, and will also avoid using data from spec_xxxx folders with more than one session_log file
+
+
+## DegreeCalc
+
+This is a small tool, designed to convert Ra and Dec from their standard forms to degrees
+
+It takes 6 arguments:
+1) The Right Ascension Hours measurement
+2) The Right Ascension Minutes measurement
+3) The Right Ascension Seconds measurement
+4) The Declination Degrees measurement
+5) The Declination Minutes measurement
+6) The Declination Seconds measurement
+
+It can also be run <b> without </b> any arguments, and the user will be asked for them in the program
+Any number of arguments other than 0 or 6 will return an error
 
 ---
