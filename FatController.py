@@ -66,7 +66,7 @@ def usage(v=False):  # print usage and quit
         print '\t\tThis corresponds to a JSON keyword of F'
         print
         print '\nExamples:'
-        print '  python FatController.py -o 0201903501 -r 149.5916 --deg -11.0642 -z 0.1605 -R 1095'
+        print '  python FatController.py -o 0201750401 -r 153.43956 --deg -0.12140218 -z 0.0945101 -R 1280.9665965465 -T 6.96597 -n 0.0378 -j '
         print '    ^^ Abell 907 cluster ^^'
         print '  python FatController.py -j session_log1463267285.96.log'
         print
