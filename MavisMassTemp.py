@@ -2,10 +2,13 @@ import subprocess
 import os
 from matplotlib import pyplot
 
+
 """
 This section of the FCtrlA project will cycle through a large number of spec_xxxx directories and create the mass-temp
 relation graph.
 It will also attempt to fit this and provide a mathematical relation
+
+AnnoteFinder credit to: AndrewStraw, GaelVaroquaux, Unknown[99], AngusMcMorland, newacct, danielboone
 """
 
 global loc
@@ -64,7 +67,6 @@ def FindLog(SpecDirs):
 
         os.chdir(loc)
 
-
     return MassLineAr, TempLineAr
 
 
@@ -80,25 +82,37 @@ def DataExtract(MassRaw, TempRaw):
             Stage1 = MassRaw[i].split(':')
             Stage2 = Stage1[1].split(' ')
             Stage3 = Stage2[1].split(',')
-            Mass.append(Stage3[0])
+            Mass.append(float(Stage3[0]))
 
             Stage1 = TempRaw[i].split(':')
             Stage2 = Stage1[1].split('"')
-            Temp.append(Stage2[1])
+            Temp.append(float(Stage2[1]))
 
     return Mass, Temp
 
 
 def MTPlot(Mass, Temp):
-    print(Temp)
+    global plot
 
-    pyplot.plot(Temp, Mass, 'x', color='r')
+    fig = pyplot.figure()
+    plot = fig.add_subplot(111)
+
+    line, = plot.plot(Temp, Mass, 'x', color='r', picker=5)
     pyplot.yscale('log')
-
     pyplot.ylabel('Mass ($M_{\odot}$)')
     pyplot.xlabel('kT ($keV$) [Probably]')
 
+    fig.canvas.mpl_connect('pick_event', onpick)
     pyplot.show()
+
+
+def onpick(event):
+    thisline = event.artist
+    xdata = thisline.get_xdata()
+    ydata = thisline.get_ydata()
+    ind = event.ind
+    pointx = xdata[ind]
+    pointy = ydata[ind]
 
 
 

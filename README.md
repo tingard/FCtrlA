@@ -10,6 +10,8 @@ Package Contents:
 * ThomasTemplates.py
 * HaroldHelper.py
 * PercyPlotter.py
+* MavisMassTemp.py
+* DaisyDegreeCalc.py
 
 ------
 
@@ -107,7 +109,7 @@ It does not require arguments, it only needs to be executed in a directory of Fa
 It can identify clusters that failed to run, and will also avoid using data from spec_xxxx folders with more than one session_log file
 
 
-## DegreeCalc
+## DaisyDegreeCalc
 
 This is a small tool, designed to convert Ra and Dec from their standard forms to degrees
 
