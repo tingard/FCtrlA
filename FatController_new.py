@@ -36,7 +36,7 @@ def usage(v=False):  # print usage and quit
     print '       python FatController.py [-o ObsID] [-r right ascension (degrees)]'
     print '                               [-d <declination> (degrees)> OR --dec <...> for negative declination]'
     print '                               [-z <redshift>]'
-    print '                               [-R <r500 (kpc)>] [-Tx temperature] [-n nH value] [-j enable job submission]'
+    print '                               [-R <r500 (kpc)>] [-T temperature] [-n nH value] [-j enable job submission]'
     print '                               [-m force monotonic shell density]'
     print '       python FatController.py --help'
 
