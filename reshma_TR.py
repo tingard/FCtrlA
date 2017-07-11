@@ -1,3 +1,9 @@
+#################################
+#A code to plot the temperature profiles for all the clusters in one directory. The path name has to be changed as per the directory
+#an example of the way to run the code python reshmaTR.py FCtrlA_0020540401	FCtrlA_0020540401/output/clmass_output.log FCtrlA_0020540401/session_log1491905834.89.log -t2.72242
+#so basically it creates two new files, one with the radius of each shell and the other with the temperatures and its errors and plots the Temp profile from those files.
+##########################
+
 import numpy as np
 import sys
 import os
@@ -9,17 +15,6 @@ from collections import OrderedDict
 import pylab as py
 from statistics import mean
 from matplotlib import style
-
-
-
-
-
-#for line in file:
-    #lines[line[0:12]] = line
-
-
-
-
 ####################
 if __name__ == "__main__":
    print sys.argv
@@ -39,42 +34,30 @@ def readFile(filename):
     filehandle = open(filename)
     #print filehandle.read()
     filehandle.close()
-
-
-
 fileDir = os.path.dirname(os.path.realpath('/home/robineappen/Desktop/Robin_project/spec/rmv12anewF/with mass'))
 print fileDir
 filename = os.path.join(fileDir, clmass_outputlog)
 readFile(filename)
-
-
 ###############################################################
 def readFile(filename2):
     filehandle = open(filename2)
     #print filehandle.read()
     filehandle.close()
-
-
-
 fileDir = os.path.dirname(os.path.realpath('/home/robineappen/Desktop/Robin_project/spec/rmv12anewF/with mass'))
 print fileDir
 filename2 = os.path.join(fileDir, radius_script)
 readFile(filename2)
-
 ###############################################################
 path = (sys.argv[2][:len(sys.argv[2]) - 17])
 pthsec = path.split('/')
 os.chdir(pthsec[0])
 print(os.getcwd())
 fname = pthsec[1] + '/' + 'kTs.txt'.format(int(time.time()))
-
 path2 = (sys.argv[1])
 pthsec = path.split('/')
 #os.chdir(pthsec[0])
 #print(os.getcwd())
 fname2 = pthsec[1] + '/' + 'rs.txt'.format(int(time.time()))
-
-
 searchquery = '   4    1   clmass     switch              0            frozen'
 
 with open(filename) as f1:
@@ -192,3 +175,4 @@ plt.axhline(y=tempo)
 #plt.show()
 plt.grid(True)
 plt.savefig(obsid+'_TR.png')
+#################################
