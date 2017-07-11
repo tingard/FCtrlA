@@ -55,6 +55,10 @@ def full_args():
     and scrape the output for values as above
     :return: None
     """
+    obsid = (sys.argv[2][:len(sys.argv[2]) - 23])
+    print(obsid)
+    #ra = float(sys.argv[3])
+    #dec = float(sys.argv[4])
     radius = float(sys.argv[1])
     clmass_script = sys.argv[2]
     script = []
@@ -79,7 +83,7 @@ def full_args():
     os.chdir(pthsec[0])
 
     print(os.getcwd())
-
+    
     # save the script to a new file in the local directory
     fname = pthsec[1] + '/' + 'PercyPlotter_script{}.xcm'.format(int(time.time()))
     with open(fname, 'w') as f:
@@ -140,7 +144,7 @@ def full_args():
         plt.ylabel(r'Mass (r) $M_\odot$')
         plt.grid(True)
         #plt.show()
-        plt.savefig('Mass-Radius.png')
+        plt.savefig(obsid+'_Mass-Radius.png')
     except ValueError as e:
         print e
         sys.exit(0)
@@ -167,4 +171,3 @@ if __name__ == "__main__":
             full_args()
         else:
             print('Secondary argument must be a valid XSPEC script')
-
