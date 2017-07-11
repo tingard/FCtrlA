@@ -114,6 +114,28 @@ breakLinks {{{{Abundanc ""}}}}
 fit
 puts $runit
 puts [massOfR {r500} rbounds]
+fit
+log
+puts [MassConf radius {r500} rbounds 0.01]
+log none
+
+set result {#Better fit found.  Rerun fit now.}
+set term {#Better fit found.  Rerun fit now.}
+ while {$result==$term} {
+    set fp [open xspec.log]
+    set data [split [read $fp] \n]
+    set result [lsearch -exact -inline $data $term]
+    puts $result
+    close $fp
+
+    if {$result==$term} {
+      fit
+      log
+      puts [MassConf radius {r500} rbounds 0.01]
+      log none
+      puts success
+    }
+ }
 exit
 """  # template clmass script, requires: data_groups, model_path, model, nH, kT, z, r500
 

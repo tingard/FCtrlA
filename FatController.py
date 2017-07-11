@@ -682,7 +682,7 @@ def phase2c(session):
             f.close()
 
 
-def phase3(session, path_to_model='/lustre/scratch/inf/tl229/new_massmod'):
+def phase3(session, path_to_model='/lustre/scratch/inf/dt237/new_massmod'):
     """
     Identify initial parameters. Create a template XSPEC script, run it and scrape the output
     :param session: dictionary, current session information (ra, dec, masking string, run options)
