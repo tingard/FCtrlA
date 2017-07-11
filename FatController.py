@@ -117,13 +117,15 @@ def check_arguments():
                     args_r500 = u.Quantity(float(opts[provided_args.index('-R')][1]), u.kpc)
                     d_a = Cosmo.angular_diameter_distance(args_z)
                     args_r500_arcseconds = (180.0/np.pi)*float(args_r500/d_a)*3600
+                    username = (subprocess.Popen('whoami', stdout=subprocess.PIPE)).stdout.read()
                     return_dict = {
                         'ObsID': args_obsid,
                         'ra': args_ra,
                         'dec': args_dec,
                         'z': args_z,
                         'r500 kpc': float(args_r500/u.Quantity(1.0, u.kpc)),
-                        'r500 arcseconds': args_r500_arcseconds
+                        'r500 arcseconds': args_r500_arcseconds,
+                        'u_name': username  # Knowing the username allows for correct file path to be used for Lustre
                     }
                     if '-j' in provided_args:
                         return_dict['enable jobs'] = True
@@ -682,7 +684,7 @@ def phase2c(session):
             f.close()
 
 
-def phase3(session, path_to_model='/lustre/scratch/inf/dt237/new_massmod'):
+def phase3(session, path_to_model):
     """
     Identify initial parameters. Create a template XSPEC script, run it and scrape the output
     :param session: dictionary, current session information (ra, dec, masking string, run options)
@@ -817,7 +819,8 @@ def main():
     phase2b(cluster_info)  # conduct phase 2b
     phase2c(cluster_info)  # conduct phase 2c
 
-    phase3(cluster_info)   # conduct phase 3
+    path = '/lustre/scratch/inf/' + cluster_info['u_name'] + '/new_massmod'
+    phase3(cluster_info, path)   # conduct phase 3
 
     if cluster_info.get('m500'):
         print 'Identified Cluster mass of {} M_solar'.format(cluster_info['m500'])
