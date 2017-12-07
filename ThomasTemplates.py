@@ -47,11 +47,11 @@ pn_file = "/lustre/scratch/astro/pr83/{obsID}/eclean/{pn_table}"  # location of 
 
 regions_file = "/lustre/scratch/astro/pr83/code/xapa/1412/{obsID}/{file}"  # location of region file requires: obsID, file
 
-sas_setup_string ="""export SAS_DIR=/lustre/scratch/astro/pr83/code/sas_dir/xmmsas_20141104_1833
+sas_setup_string = """export SAS_DIR=/lustre/scratch/astro/pr83/code/sas_dir/xmmsas_20141104_1833
 . $SAS_DIR/setsas.sh
 export SAS_CCFPATH=/lustre/scratch/astro/pr83/code/ccf
 export SAS_ODF=/lustre/scratch/astro/pr83/{obsID}/odf/*SUM.SAS
-export SAS_CCF=/lustre/scratch/astro/pr83/{obsID}/odf/ccf.cif""" # string to initialise SAS, requires obsID
+export SAS_CCF=/lustre/scratch/astro/pr83/{obsID}/odf/ccf.cif"""  # string to initialise SAS, requires obsID
 
 reg_string = '''# Region file format: DS9 version 4.1
 global color=green dashlist=8 3 width=1 font="helvetica 10 normal roman" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1
@@ -70,7 +70,7 @@ sas_circle_gen = "evselect table={pn_table} withspectrumset=yes spectrumset={out
 
 sas_annulus_gen = "evselect table={pn_table} withspectrumset=yes spectrumset={outfile} energycolumn=PI spectralbinsize=5 withspecranges=yes specchannelmin=0 specchannelmax=20479 expression='(FLAG==0) && (PATTERN<=4) && ((X,Y) IN annulus({x_pos},{y_pos},{inner_radius},{outer_radius})) &&! {masking_string}'"  # string to generate annular spectra, requires: pn_table, outfile, x_pos, y_pos, inner_radius, outer_radius, masking_string
 
-sas_backscale = "backscale spectrumset={input_spectrum} badpixlocation={pn_table}" # requires: input_spectrum, pn_table
+sas_backscale = "backscale spectrumset={input_spectrum} badpixlocation={pn_table}"  # requires: input_spectrum, pn_table
 
 sas_rmfgen = "rmfgen spectrumset={input_spectra} rmfset={output_rmf}"  # can take some time, requires: input_spectra, output_rmf
 

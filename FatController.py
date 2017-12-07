@@ -125,7 +125,7 @@ def check_arguments():
                         'z': args_z,
                         'r500 kpc': float(args_r500/u.Quantity(1.0, u.kpc)),
                         'r500 arcseconds': args_r500_arcseconds,
-                        'u_name': username  # Knowing the username allows for correct file path to be used for Lustre
+                        'u_name': str(username)  # Knowing username allows for correct file path to be used for Lustre
                     }
                     if '-j' in provided_args:
                         return_dict['enable jobs'] = True
@@ -498,7 +498,7 @@ def phase2a(session):
             x_pos=session['ra physical'],
             y_pos=session['dec physical'],
             inner_radius=float(session['shells'][-1]),
-            outer_radius=float(session['shells'][-1])*1.2,
+            outer_radius=float(session['shells'][-1]) * 1.2,
             masking_string=session['masking string']
         )
     ]
